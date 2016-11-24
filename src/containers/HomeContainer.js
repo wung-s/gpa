@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
+import Grid from 'grid-styled';
+import styled from 'styled-components';
+
 
 //Material ui
 import AppBar from 'material-ui/AppBar';
-import TextField from 'material-ui/TextField';
+// import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 
-
-
 //Custom Component
 import SubjectTable from '../components/SubjectTable';
+
+const BodyWrapper = styled.div`
+  padding: 0 20px;
+`;
+const AppBarWrapper = styled.div`
+  text-align: center;
+`;
+
 
 
 class HomeContainer extends Component {
@@ -25,37 +34,35 @@ class HomeContainer extends Component {
     }
     this.state = {
       noOfSubj: 1,
-      subjects: [Object.assign({}, this.subject)]
+      subjects: [Object.assign({}, this.subject)],
+      showResult: false
+
     }
     this.handleInternalMrkChange = this.handleInternalMrkChange.bind(this);
     this.handleExternalMrkChange = this.handleExternalMrkChange.bind(this);
     this.handleNoOfSubjSelection = this.handleNoOfSubjSelection.bind(this)
     this.handleCreditHourChange = this.handleCreditHourChange.bind(this)
     this.handleCalculateGPA = this.handleCalculateGPA.bind(this)
+    this.handleReset = this.handleReset.bind(this)
   }
 
   handleNoOfSubjSelection(event, target, value) {
     let subjects = this.state.subjects;
     if (value > this.state.subjects.length) {
       let diff = value - this.state.subjects.length;
-      console.log({ diff });
       while (diff > 0) {
         subjects.push(Object.assign({}, this.subject));
         diff--;
       }
     } else {
       let negDiff = value - this.state.subjects.length;
-      console.log({ negDiff });
       subjects = this.state.subjects.slice(0, negDiff);
-
     }
     this.setState({
       noOfSubj: value,
       subjects
     })
   }
-
-
 
   handleInternalMrkChange(subjIndex, event, value) {
     let subjects = this.state.subjects.slice();
@@ -75,7 +82,14 @@ class HomeContainer extends Component {
     this.setState({ subjects })
   }
   handleCalculateGPA() {
-
+    this.setState({ showResult: true })
+  }
+  handleReset() {
+    this.setState({
+      noOfSubj: 1,
+      subjects: [Object.assign({}, this.subject)],
+      showResult: false
+    })
   }
 
   render() {
@@ -88,24 +102,31 @@ class HomeContainer extends Component {
     ];
     return (
       <div>
-        <AppBar
-          title="Calculator"
-          showMenuIconButton={false}
-          />
-        <SelectField
-          value={this.state.noOfSubj}
-          onChange={this.handleNoOfSubjSelection}
-          floatingLabelText="No of Subject"
-          >
-          {items}
-        </SelectField>
-        <SubjectTable
-          subjects={this.state.subjects}
-          onExternalMrkChange={this.handleExternalMrkChange}
-          onInternalMrkChange={this.handleInternalMrkChange}
-          onCreditHourChange={this.handleCreditHourChange}
-          />
-        <RaisedButton label="Calculate" secondary={true} style={{ margin: 5 }} onTouchTap={this.handleCalculateGPA} />
+        <AppBarWrapper>
+          <AppBar
+            title="Calculator"
+            showMenuIconButton={false}
+            />
+        </AppBarWrapper>
+        <BodyWrapper>
+          <SelectField
+            value={this.state.noOfSubj}
+            onChange={this.handleNoOfSubjSelection}
+            floatingLabelText="No of Subject"
+            >
+            {items}
+          </SelectField>
+          <SubjectTable
+            subjects={this.state.subjects}
+            onExternalMrkChange={this.handleExternalMrkChange}
+            onInternalMrkChange={this.handleInternalMrkChange}
+            onCreditHourChange={this.handleCreditHourChange}
+            showResult={this.state.showResult}
+            />
+          <RaisedButton label="Calculate" primary={true} style={{ margin: 5 }} onTouchTap={this.handleCalculateGPA} />
+          <RaisedButton label="Reset" secondary={true} style={{ margin: 5 }} onTouchTap={this.handleReset} />
+        </BodyWrapper>
+
       </div >
     );
   }

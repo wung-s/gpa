@@ -1,20 +1,48 @@
 import React, { PropTypes } from 'react';
-import { Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn }
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn }
   from 'material-ui/Table';
 import TextField from 'material-ui/TextField';
-import Toggle from 'material-ui/Toggle';
 
-const styles = {
-  propContainer: {
-    width: 200,
-    overflow: 'hidden',
-    margin: '20px auto 0',
-  },
-  propToggleHeader: {
-    margin: '20px auto 10px',
-  },
-};
+const calculateGrade = (total) => {
+  let grade, gradePoint;
+  if (total >= 70) {
+    grade = 'O';
+    gradePoint = 7;
+  } else if (total >= 60) {
+    grade = 'A';
+    gradePoint = 6;
+  } else if (total >= 55) {
+    grade = 'B';
+    gradePoint = 5;
+  } else if (total >= 50) {
+    grade = 'C';
+    gradePoint = 4;
+  } else if (total >= 45) {
+    grade = 'D';
+    gradePoint = 3;
+  } else if (total >= 40) {
+    grade = 'E';
+    gradePoint = 2;
+  } else {
+    grade = 'F';
+    gradePoint = 0;
+  }
+  return { grade, gradePoint };
+}
 
+const calculateGPA = (subjects) => {
+  let total = subjects.reduce((total, currSubj) => {
+    let creditPoint = calculateGrade((+currSubj.internal) + (+currSubj.external)).gradePoint * (+currSubj.creditHr);
+    total.creditPoint = (total.creditPoint || 0) + creditPoint;
+    total.creditHr = (total.creditHr || 0) + (+currSubj.creditHr);
+    return total;
+  }, [{ creditPoint: 0, creditHr: 0 }]);
+  const result = (total.creditPoint / total.creditHr);
+  if (result !== result)
+    return ''
+  return result.toFixed(3);
+
+}
 
 const TableConfig = {
   fixedHeader: true,
@@ -91,22 +119,24 @@ const SubjectTable = (props) => {
                 {(+currSubj.internal) + (+currSubj.external)}
               </TableRowColumn>
               <TableRowColumn>
-
+                {calculateGrade((+currSubj.internal) + (+currSubj.external)).grade}
               </TableRowColumn>
               <TableRowColumn>
-                {(+currSubj.internal) + (+currSubj.external)}
+                {calculateGrade((+currSubj.internal) + (+currSubj.external)).gradePoint * (+currSubj.creditHr)}
               </TableRowColumn>
 
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <h1> GPA: {props.showResult && calculateGPA(props.subjects)}</h1>
     </div>
   )
 }
 
 SubjectTable.propTypes = {
   subjects: PropTypes.array.isRequired,
+  showResult: PropTypes.bool.isRequired,
   onInternalMrkChange: PropTypes.func.isRequired,
   onExternalMrkChange: PropTypes.func.isRequired,
   onCreditHourChange: PropTypes.func.isRequired
