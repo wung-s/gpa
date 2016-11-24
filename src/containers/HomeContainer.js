@@ -29,13 +29,14 @@ class HomeContainer extends Component {
       internal: '',
       external: '',
       creditHr: '',
-      credit: '',
-      grade: '',
+      // credit: '',
+      // grade: '',
     }
     this.state = {
       noOfSubj: 1,
       subjects: [Object.assign({}, this.subject)],
-      showResult: false
+      formValid: false,
+      isSubmitted: false
 
     }
     this.handleInternalMrkChange = this.handleInternalMrkChange.bind(this);
@@ -48,6 +49,7 @@ class HomeContainer extends Component {
 
   handleNoOfSubjSelection(event, target, value) {
     let subjects = this.state.subjects;
+    this.setState({ isSubmitted: false });
     if (value > this.state.subjects.length) {
       let diff = value - this.state.subjects.length;
       while (diff > 0) {
@@ -67,29 +69,48 @@ class HomeContainer extends Component {
   handleInternalMrkChange(subjIndex, event, value) {
     let subjects = this.state.subjects.slice();
     subjects[subjIndex].internal = value;
-    this.setState({ subjects })
+    this.setState({ subjects, isSubmitted: false })
 
   }
   handleExternalMrkChange(subjIndex, event, value) {
     let subjects = this.state.subjects.slice();
     subjects[subjIndex].external = value;
-    this.setState({ subjects })
+    this.setState({ subjects, isSubmitted: false })
 
   }
   handleCreditHourChange(subjIndex, event, value) {
     let subjects = this.state.subjects.slice();
     subjects[subjIndex].creditHr = value;
-    this.setState({ subjects })
+    this.setState({ subjects, isSubmitted: false })
   }
   handleCalculateGPA() {
-    this.setState({ showResult: true })
+    this.setState({ isSubmitted: true });
+    // console.log(this.isFormValid(this.state.subjects));
+    if (this.isFormValid(this.state.subjects))
+      this.setState({ formValid: true })
+    else
+      this.setState({ formValid: false })
   }
   handleReset() {
     this.setState({
       noOfSubj: 1,
       subjects: [Object.assign({}, this.subject)],
-      showResult: false
+      formValid: false,
+      isSubmitted: false
     })
+  }
+
+  isFormValid(subjects) {
+    for (let subj of subjects) {
+      // console.log({ subj });
+      if (subj.internal === '')
+        return false;
+      if (subj.external === '')
+        return false;
+      if (subj.creditHr === '')
+        return false;
+    }
+    return true;
   }
 
   render() {
@@ -99,6 +120,11 @@ class HomeContainer extends Component {
       <MenuItem key={3} value={3} primaryText="3" />,
       <MenuItem key={4} value={4} primaryText="4" />,
       <MenuItem key={5} value={5} primaryText="5" />,
+      <MenuItem key={6} value={6} primaryText="6" />,
+      <MenuItem key={7} value={7} primaryText="7" />,
+      <MenuItem key={8} value={8} primaryText="8" />,
+      <MenuItem key={9} value={9} primaryText="9" />,
+      <MenuItem key={10} value={10} primaryText="10" />,
     ];
     return (
       <div>
@@ -121,7 +147,8 @@ class HomeContainer extends Component {
             onExternalMrkChange={this.handleExternalMrkChange}
             onInternalMrkChange={this.handleInternalMrkChange}
             onCreditHourChange={this.handleCreditHourChange}
-            showResult={this.state.showResult}
+            formValid={this.state.formValid}
+            onSubmit={this.state.isSubmitted}
             />
           <RaisedButton label="Calculate" primary={true} style={{ margin: 5 }} onTouchTap={this.handleCalculateGPA} />
           <RaisedButton label="Reset" secondary={true} style={{ margin: 5 }} onTouchTap={this.handleReset} />

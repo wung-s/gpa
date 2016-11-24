@@ -44,6 +44,13 @@ const calculateGPA = (subjects) => {
 
 }
 
+const getErrorText = (onSubmit, val) => {
+  // console.log({ onSubmit, val });
+  if (onSubmit && val === '')
+    return 'Cannot be blank'
+  return ''
+}
+
 const TableConfig = {
   fixedHeader: true,
   fixedFooter: true,
@@ -96,6 +103,7 @@ const SubjectTable = (props) => {
                   hintText="Internal"
                   type="number"
                   value={currSubj.internal}
+                  errorText={getErrorText(props.onSubmit, currSubj.internal)}
                   onChange={props.onInternalMrkChange.bind(null, index)}
                   />
               </TableRowColumn>
@@ -104,6 +112,7 @@ const SubjectTable = (props) => {
                   hintText="External"
                   type="number"
                   value={currSubj.external}
+                  errorText={getErrorText(props.onSubmit, currSubj.external)}
                   onChange={props.onExternalMrkChange.bind(null, index)}
                   />
               </TableRowColumn>
@@ -112,6 +121,7 @@ const SubjectTable = (props) => {
                   hintText="Credit"
                   type="number"
                   value={currSubj.creditHr}
+                  errorText={getErrorText(props.onSubmit, currSubj.creditHr)}
                   onChange={props.onCreditHourChange.bind(null, index)}
                   />
               </TableRowColumn>
@@ -124,19 +134,19 @@ const SubjectTable = (props) => {
               <TableRowColumn>
                 {calculateGrade((+currSubj.internal) + (+currSubj.external)).gradePoint * (+currSubj.creditHr)}
               </TableRowColumn>
-
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <h1> GPA: {props.showResult && calculateGPA(props.subjects)}</h1>
+      <h1> GPA: {(props.onSubmit && props.formValid) && calculateGPA(props.subjects)}</h1>
     </div>
   )
 }
 
 SubjectTable.propTypes = {
   subjects: PropTypes.array.isRequired,
-  showResult: PropTypes.bool.isRequired,
+  onSubmit: PropTypes.bool.isRequired,
+  formValid: PropTypes.bool.isRequired,
   onInternalMrkChange: PropTypes.func.isRequired,
   onExternalMrkChange: PropTypes.func.isRequired,
   onCreditHourChange: PropTypes.func.isRequired
