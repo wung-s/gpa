@@ -148,7 +148,7 @@ class HomeContainer extends Component {
             onInternalMrkChange={this.handleInternalMrkChange}
             onCreditHourChange={this.handleCreditHourChange}
             formValid={this.state.formValid}
-            onSubmit={this.state.isSubmitted}
+            isSubmitted={this.state.isSubmitted}
             />
           <RaisedButton label="Calculate" primary={true} style={{ margin: 5 }} onTouchTap={this.handleCalculateGPA} />
           <RaisedButton label="Reset" secondary={true} style={{ margin: 5 }} onTouchTap={this.handleReset} />
